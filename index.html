@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartHomePrice – AI House Price Predictor</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    rgba(7, 18, 35, 0.94),
+                    rgba(12, 52, 73, 0.82)
+                ),
+                url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=90");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            color: white;
+        }
+
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .topbar {
+            height: 75px;
+            padding: 0 6%;
+
+            display: flex;
+            align-items: center;
+
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+
+            background: rgba(0,0,0,0.20);
+
+            backdrop-filter: blur(12px);
+        }
+
+
+        .brand {
+            font-size: 23px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+
+        .brand span {
+            color: #4dd0e1;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            min-height: calc(100vh - 75px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 40px 25px;
+        }
+
+
+        .container {
+            width: 1150px;
+            max-width: 100%;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 45px;
+
+            align-items: center;
+        }
+
+
+        /* =========================
+           LEFT HERO
+        ========================= */
+
+        .hero {
+            padding: 20px;
+        }
+
+
+        .tag {
+            display: inline-block;
+
+            padding: 8px 15px;
+
+            border-radius: 25px;
+
+            background: rgba(77,208,225,0.14);
+
+            border: 1px solid rgba(77,208,225,0.3);
+
+            color: #80deea;
+
+            font-size: 13px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .hero h1 {
+            font-size: 52px;
+
+            line-height: 1.08;
+
+            margin-bottom: 18px;
+
+            letter-spacing: -1.5px;
+        }
+
+
+        .hero h1 span {
+            color: #4dd0e1;
+        }
+
+
+        .hero p {
+            max-width: 550px;
+
+            color: #d3e0e8;
+
+            font-size: 16px;
+
+            line-height: 1.7;
+
+            margin-bottom: 28px;
+        }
+
+
+        .highlights {
+            display: flex;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .highlight {
+            padding: 13px 17px;
+
+            border-radius: 12px;
+
+            background: rgba(255,255,255,0.08);
+
+            border: 1px solid rgba(255,255,255,0.12);
+
+            font-size: 13px;
+
+            color: #e5edf2;
+        }
+
+
+        /* =========================
+           FORM CARD
+        ========================= */
+
+        .card {
+            background: rgba(255,255,255,0.97);
+
+            color: #182536;
+
+            padding: 32px;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 25px 70px rgba(0,0,0,0.35);
+
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+
+        .card-header {
+            margin-bottom: 24px;
+        }
+
+
+        .card-header h2 {
+            font-size: 26px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .card-header p {
+            color: #718096;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           INPUT GRID
+        ========================= */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 16px;
+        }
+
+
+        .field {
+            margin-bottom: 2px;
+        }
+
+
+        .field label {
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-bottom: 7px;
+
+            color: #344054;
+        }
+
+
+        .input-box {
+            position: relative;
+        }
+
+
+        .icon {
+            position: absolute;
+
+            left: 12px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            font-size: 16px;
+
+            z-index: 1;
+        }
+
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 13px 12px 13px 39px;
+
+            border: 1px solid #d8dee7;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            background: #fafbfc;
+
+            transition: 0.2s;
+
+            color: #182536;
+        }
+
+
+        select {
+            appearance: auto;
+        }
+
+
+        input:focus,
+        select:focus {
+            border-color: #26b6c9;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px rgba(38,182,201,0.12);
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .predict-btn {
+            width: 100%;
+
+            margin-top: 22px;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #19b5c8,
+                    #087f99
+                );
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+            box-shadow:
+                0 7px 18px rgba(8,127,153,0.25);
+        }
+
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 10px 25px rgba(8,127,153,0.35);
+        }
+
+
+        .predict-btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result {
+            margin-top: 20px;
+
+            padding: 20px;
+
+            text-align: center;
+
+            border-radius: 12px;
+
+            background: #ecfbfd;
+
+            border: 1px solid #b8edf2;
+        }
+
+
+        .result-label {
+            font-size: 12px;
+
+            color: #667085;
+
+            margin-bottom: 6px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        .price {
+            font-size: 30px;
+
+            font-weight: 800;
+
+            color: #087f99;
+        }
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error {
+            margin-top: 20px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background: #fff1f2;
+
+            border: 1px solid #fecdd3;
+
+            color: #be123c;
+
+            font-size: 13px;
+
+            word-break: break-word;
+        }
+
+
+        /* =========================
+           NOTE
+        ========================= */
+
+        .note {
+            margin-top: 16px;
+
+            text-align: center;
+
+            font-size: 11px;
+
+            color: #8a96a3;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 950px) {
+
+            body {
+                overflow: auto;
+            }
+
+            .main {
+                padding: 35px 18px;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+
+                max-width: 700px;
+            }
+
+            .hero {
+                text-align: center;
+            }
+
+            .hero p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .highlights {
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .brand {
+                font-size: 19px;
+            }
+
+            .brand span {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 24px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            🏠 SmartHomePrice
+
+            <span>
+                – AI House Price Predictor
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+        <div class="container">
+
+
+            <!-- =========================
+                 LEFT SIDE
+            ========================== -->
+
+            <section class="hero">
+
+                <div class="tag">
+                    ✨ SMART PROPERTY ESTIMATION
+                </div>
+
+
+                <h1>
+
+                    Discover the
+
+                    <span>
+                        Value of Your Home
+                    </span>
+
+                </h1>
+
+
+                <p>
+
+                    Get an intelligent estimate of your property's
+                    market value. Enter your home details and let
+                    our machine learning model predict an estimated
+                    house price instantly.
+
+                </p>
+
+
+                <div class="highlights">
+
+                    <div class="highlight">
+                        ⚡ Instant Prediction
+                    </div>
+
+                    <div class="highlight">
+                        🏠 Property Analysis
+                    </div>
+
+                    <div class="highlight">
+                        📊 Machine Learning
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 RIGHT SIDE
+            ========================== -->
+
+            <section class="card">
+
+                <div class="card-header">
+
+                    <h2>
+                        Property Details
+                    </h2>
+
+                    <p>
+                        Enter your property information below
+                    </p>
+
+                </div>
+
+
+                <form action="/predict" method="POST">
+
+                    <div class="grid">
+
+
+                        <!-- =========================
+                             BEDROOMS
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                Bedrooms
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    🛏️
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="bed"
+                                    min="1"
+                                    step="1"
+                                    placeholder="e.g. 3"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             BATHROOMS
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                Bathrooms
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    🚿
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="bath"
+                                    min="1"
+                                    step="0.5"
+                                    placeholder="e.g. 2"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             HOUSE SIZE
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                Home Size (sq ft)
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    📐
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="house_size"
+                                    min="1"
+                                    placeholder="e.g. 1800"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             LOT SIZE
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                Lot Size (acres)
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    🌳
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="acre_lot"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="e.g. 0.25"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             CITY
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                City
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    🏙️
+                                </span>
+
+                                <input
+                                    type="text"
+                                    name="city"
+                                    placeholder="e.g. Houston"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             STATE
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                State
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    📍
+                                </span>
+
+                                <input
+                                    type="text"
+                                    name="state"
+                                    placeholder="e.g. Texas"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             ZIP CODE
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                ZIP Code
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    🔢
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="zip_code"
+                                    placeholder="e.g. 77001"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             PROPERTY STATUS
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                Property Status
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    🏷️
+                                </span>
+
+                                <select
+                                    name="status"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Select status
+                                    </option>
+
+                                    <option value="for_sale">
+                                        For Sale
+                                    </option>
+
+                                    <option value="new_construction">
+                                        New Construction
+                                    </option>
+
+                                    <option value="ready_to_build">
+                                        Ready to Build
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             PREVIOUS SOLD YEAR
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                Previous Sold Year
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    📅
+                                </span>
+
+                                <select
+                                    name="sold_year"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Select year
+                                    </option>
+
+                                    <option value="0">
+                                        Never Sold
+                                    </option>
+
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2019">2019</option>
+                                    <option value="2018">2018</option>
+                                    <option value="2017">2017</option>
+                                    <option value="2016">2016</option>
+                                    <option value="2015">2015</option>
+                                    <option value="2014">2014</option>
+                                    <option value="2013">2013</option>
+                                    <option value="2012">2012</option>
+                                    <option value="2011">2011</option>
+                                    <option value="2010">2010</option>
+                                    <option value="2009">2009</option>
+                                    <option value="2008">2008</option>
+                                    <option value="2007">2007</option>
+                                    <option value="2006">2006</option>
+                                    <option value="2005">2005</option>
+                                    <option value="2004">2004</option>
+                                    <option value="2003">2003</option>
+                                    <option value="2002">2002</option>
+                                    <option value="2001">2001</option>
+                                    <option value="2000">2000</option>
+                                    <option value="1999">1999</option>
+                                    <option value="1998">1998</option>
+                                    <option value="1997">1997</option>
+                                    <option value="1996">1996</option>
+                                    <option value="1995">1995</option>
+                                    <option value="1994">1994</option>
+                                    <option value="1993">1993</option>
+                                    <option value="1992">1992</option>
+                                    <option value="1991">1991</option>
+                                    <option value="1990">1990</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =========================
+                             PREVIOUS SOLD MONTH
+                        ========================== -->
+
+                        <div class="field">
+
+                            <label>
+                                Previous Sold Month
+                            </label>
+
+                            <div class="input-box">
+
+                                <span class="icon">
+                                    🗓️
+                                </span>
+
+                                <select
+                                    name="sold_month"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Select month
+                                    </option>
+
+                                    <option value="0">
+                                        Never Sold
+                                    </option>
+
+                                    <option value="1">
+                                        January
+                                    </option>
+
+                                    <option value="2">
+                                        February
+                                    </option>
+
+                                    <option value="3">
+                                        March
+                                    </option>
+
+                                    <option value="4">
+                                        April
+                                    </option>
+
+                                    <option value="5">
+                                        May
+                                    </option>
+
+                                    <option value="6">
+                                        June
+                                    </option>
+
+                                    <option value="7">
+                                        July
+                                    </option>
+
+                                    <option value="8">
+                                        August
+                                    </option>
+
+                                    <option value="9">
+                                        September
+                                    </option>
+
+                                    <option value="10">
+                                        October
+                                    </option>
+
+                                    <option value="11">
+                                        November
+                                    </option>
+
+                                    <option value="12">
+                                        December
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =========================
+                         BUTTON
+                    ========================== -->
+
+                    <button
+                        type="submit"
+                        class="predict-btn"
+                    >
+
+                        🔮 Estimate Home Value
+
+                    </button>
+
+                </form>
+
+
+                <!-- =========================
+                     PREDICTION RESULT
+                ========================== -->
+
+                {% if prediction %}
+
+                <div class="result">
+
+                    <div class="result-label">
+                        Estimated Property Value
+                    </div>
+
+                    <div class="price">
+                        {{ prediction }}
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                <!-- =========================
+                     ERROR
+                ========================== -->
+
+                {% if error %}
+
+                <div class="error">
+                    {{ error }}
+                </div>
+
+                {% endif %}
+
+
+                <div class="note">
+
+                    Prediction is generated by a machine learning
+                    model and should be considered an estimate.
+
+                </div>
+
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+</body>
+
+</html>
